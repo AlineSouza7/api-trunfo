@@ -56,4 +56,12 @@ public class UserService implements ImplementarService<User, UserDTO> {
     public TypeUser[] typesUser() {
         return TypeUser.values();
     }
+
+    public User login(String user, String password) {
+        Optional<User> userOptional = userRepository.findByUsernameAndPassword(user, password);
+        if (userOptional.isPresent()) {
+            return userOptional.get();
+        }
+        throw new RuntimeException("Login inválido!!");
+    }
 }
