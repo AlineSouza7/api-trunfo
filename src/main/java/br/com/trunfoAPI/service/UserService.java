@@ -64,4 +64,8 @@ public class UserService implements ImplementarService<User, UserDTO> {
         }
         throw new RuntimeException("Login inválido!!");
     }
+
+    public void save(User user) {
+        userRepository.save(user);
+    }
 }

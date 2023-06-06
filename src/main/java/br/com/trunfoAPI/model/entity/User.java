@@ -17,6 +17,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private TypeUser typeUser;
     private String username;
-    private String linkProfile;
+    private String profileImage;
     private String password;
 }
