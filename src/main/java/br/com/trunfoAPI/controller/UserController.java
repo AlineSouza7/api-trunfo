@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -44,7 +45,7 @@ public class UserController implements ImplementarController<User, UserDTO> {
     public ResponseEntity<PutObjectRequest> post(@RequestParam MultipartFile image,
                                                  @PathVariable Long id) throws IOException {
 
-        try{
+        try {
             BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(chaveacesso, chavesecreta);
             AmazonS3Client amazonS3Client = (AmazonS3Client) AmazonS3ClientBuilder.standard()
                     .withRegion(Regions.US_EAST_1)
@@ -57,7 +58,7 @@ public class UserController implements ImplementarController<User, UserDTO> {
             amazonS3Client.putObject(imageObject);
 
             User user = userService.listOne(id);
-            user.setProfileImage(keyName);
+            user.setLinkProfile(new File(keyName));
 
             userService.save(user);
         } catch (AmazonS3Exception e) {

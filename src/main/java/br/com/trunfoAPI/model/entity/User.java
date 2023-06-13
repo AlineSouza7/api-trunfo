@@ -4,6 +4,8 @@ import br.com.trunfoAPI.model.enums.TypeUser;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.File;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -17,6 +19,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private TypeUser typeUser;
     private String username;
-    private String profileImage;
+    private File linkProfile;
     private String password;
 }
