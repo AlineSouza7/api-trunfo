@@ -23,6 +23,10 @@ public class CardService implements ImplementarService<Card, CardDTO> {
         return cardRepository.save(card);
     }
 
+    public Card save(Card card) {
+        return cardRepository.save(card);
+    }
+
     @Override
     public List<Card> listAll() {
         return cardRepository.findAll();
