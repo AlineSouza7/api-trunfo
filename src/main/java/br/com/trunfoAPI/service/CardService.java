@@ -14,7 +14,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CardService implements ImplementarService<Card, CardDTO> {
 
-    CardRepository cardRepository;
+    private CardRepository cardRepository;
 
     @Override
     public Card create(CardDTO dto) {

@@ -13,6 +13,8 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +32,7 @@ import java.util.UUID;
 @CrossOrigin
 public class CardController implements ImplementarController<Card, CardDTO> {
 
+    @Autowired
     private CardService cardService;
 
     @Value("${chaveacesso}")
@@ -42,12 +46,12 @@ public class CardController implements ImplementarController<Card, CardDTO> {
 
     @Override
     @PostMapping
-    public ResponseEntity<Card> create(@RequestBody @Valid CardDTO dto) {
+    public ResponseEntity<Card> create(@RequestBody CardDTO dto) {
         return ResponseEntity.ok(cardService.create(dto));
     }
 
     @PostMapping("/uploadImage/{id}")
-    public ResponseEntity<PutObjectRequest> post(@RequestParam MultipartFile image,
+    public ResponseEntity<PutObjectRequest> post(@RequestBody MultipartFile image,
                                                  @PathVariable Long id) throws IOException {
 
         try {
@@ -59,8 +63,10 @@ public class CardController implements ImplementarController<Card, CardDTO> {
 
             String keyName = UUID.randomUUID().toString();
 
-            PutObjectRequest imageObject = new PutObjectRequest(bucketname, keyName, image.getInputStream(), null);
-            amazonS3Client.putObject(imageObject);
+            if(!image.isEmpty()) {
+                PutObjectRequest imageObject = new PutObjectRequest(bucketname, keyName, image.getInputStream(), null);
+                amazonS3Client.putObject(imageObject);
+            }
 
             Card card = cardService.listOne(id);
             card.setLinkPicture(keyName);
@@ -70,6 +76,27 @@ public class CardController implements ImplementarController<Card, CardDTO> {
             System.exit(0);
         }
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/image/{keyName}")
+    public ResponseEntity<URL> list(@PathVariable String keyName) {
+        URL url = null;
+        try{
+            BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(chaveacesso, chavesecreta);
+            AmazonS3Client amazonS3Client = (AmazonS3Client) AmazonS3ClientBuilder.standard()
+                    .withRegion(Regions.US_EAST_1)
+                    .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
+                    .build();
+
+            if(amazonS3Client.doesBucketExist(bucketname)){
+                url = amazonS3Client.generatePresignedUrl(bucketname, keyName,
+                        DateTime.now().plusDays(1).toDate());
+            }
+
+        } catch (AmazonS3Exception e) {
+            System.exit(0);
+        }
+        return ResponseEntity.ok(url);
     }
 
     @Override
