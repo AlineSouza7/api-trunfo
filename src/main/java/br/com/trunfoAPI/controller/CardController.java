@@ -92,7 +92,7 @@ public class CardController implements ImplementarController<Card, CardDTO> {
 
             if (amazonS3Client.doesBucketExist(bucketname)) {
                 url = amazonS3Client.generatePresignedUrl(bucketname, keyName,
-                        DateTime.now().plusDays(1).toDate());
+                        DateTime.now().toDate());
             }
 
         } catch (AmazonS3Exception e) {
@@ -116,7 +116,7 @@ public class CardController implements ImplementarController<Card, CardDTO> {
                 List<Card> cardList = cardService.listAll();
                 for (Card card : cardList) {
                     URL url = amazonS3Client.generatePresignedUrl(bucketname, card.getLinkPicture(),
-                            DateTime.now().plusDays(1).toDate());
+                            DateTime.now().toDate());
                     urls.add(url);
                 }
             }
