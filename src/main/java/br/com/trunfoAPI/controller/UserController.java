@@ -101,9 +101,4 @@ public class UserController implements ImplementarController<User, UserDTO> {
     public ResponseEntity<TypeUser[]> typesUser() {
         return ResponseEntity.ok(userService.typesUser());
     }
-
-    @GetMapping("/login/{user}/{password}")
-    public ResponseEntity<User> login(@PathVariable String user, @PathVariable String password) {
-        return ResponseEntity.ok(userService.login(user, password));
-    }
 }
