@@ -19,7 +19,9 @@ import java.io.IOException;
 public class Filter extends OncePerRequestFilter { // Permite que cada vez que houver uma requisição o filtro seja aplicado
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
 
         if (privateRoute(request.getRequestURI())) {
@@ -37,11 +39,11 @@ public class Filter extends OncePerRequestFilter { // Permite que cada vez que h
             } catch (CookieNotFoundException e) {
                 System.out.println(e.getMessage());
             }
-            filterChain.doFilter(request, response);
         }
+        filterChain.doFilter(request, response);
     }
 
     private Boolean privateRoute(String url) {
-        return url.startsWith("/card") || url.startsWith("/user");
+        return url.contains("/card") || url.contains("/user");
     }
 }

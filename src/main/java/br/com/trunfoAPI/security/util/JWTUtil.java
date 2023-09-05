@@ -17,13 +17,13 @@ public class JWTUtil {
     private static UserRepositorySecurity userRepositorySecurity;
 
     // Senha para decriptação da senha do JWT
-    @Value("${senhaJWT}")
     private static String password;
 
     // Só é necessário pois o userRepository é somente uma declaração da classe e não um objeto
     @Autowired
-    public JWTUtil(UserRepositorySecurity userRepositorySecurity) {
+    public JWTUtil(UserRepositorySecurity userRepositorySecurity, @Value("${senhaJWT}") String password) {
         JWTUtil.userRepositorySecurity = userRepositorySecurity;
+        JWTUtil.password = password;
     }
 
     // Criando um token
@@ -34,7 +34,7 @@ public class JWTUtil {
                 .withSubject(userSecurity.getUsername()) // Algum atributo do objeto que será seu identificador
                 .withIssuedAt(new Date()) // Data de emissão
                 .withExpiresAt(new Date(new Date().getTime() + 18000)) // Tempo de expiração do token
-                .sign(algorithm); // Senha para decriptar
+                .sign(algorithm); // Algoritmo para decriptar
     }
 
     // Vai retornar o usuário pelo subject

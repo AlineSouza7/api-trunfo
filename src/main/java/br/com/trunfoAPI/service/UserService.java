@@ -27,8 +27,8 @@ public class UserService implements ImplementarService<User, UserDTO> {
         User user = new User();
         BeanUtils.copyProperties(dto, user);
 
-//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//        user.setPassword(encoder.encode(user.getPassword()));
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        user.setPassword(encoder.encode(user.getPassword()));
 
         UserSecurity userSecurity = new UserSecurity();
         userSecurity.setUser(user);
