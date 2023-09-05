@@ -1,5 +1,6 @@
 package br.com.trunfoAPI.security;
 
+import br.com.trunfoAPI.model.enums.TypeUser;
 import br.com.trunfoAPI.security.service.JpaService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +11,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -24,7 +28,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Configuration {
 
-    private JpaService jpaService;
+    private final JpaService jpaService;
 
     @Autowired
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
@@ -41,15 +45,22 @@ public class Configuration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        // Configura permissões para as rotas e desabilita o CSRF
-        httpSecurity.authorizeHttpRequests(auth ->
-                auth.requestMatchers(HttpMethod.POST, "/login", "/user").permitAll()
-                        .anyRequest().authenticated());
-        httpSecurity.csrf().disable();
-        httpSecurity.cors(cors -> corsConfigurationSource());
+
+        // Configura permissões para as rotas
+        httpSecurity.authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.POST, "/login", "/user").permitAll()
+                .requestMatchers(HttpMethod.POST, "/card").hasAuthority(TypeUser.ADMINISTRADOR.getAuthority())
+                .requestMatchers(HttpMethod.PUT, "/card").hasAuthority(TypeUser.ADMINISTRADOR.getAuthority())
+                .anyRequest().authenticated());
+
+        httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        httpSecurity.addFilterBefore(new Filter(), UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        httpSecurity.cors(httpSecurityCorsConfigurer -> corsConfigurationSource());
         return httpSecurity.build();
     }
 
+    //Vai permitir comunicação do back com o front
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

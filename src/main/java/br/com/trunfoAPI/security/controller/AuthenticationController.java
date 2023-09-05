@@ -1,6 +1,6 @@
 package br.com.trunfoAPI.security.controller;
 
-import br.com.trunfoAPI.model.entity.User;
+
 import br.com.trunfoAPI.security.model.Login;
 import br.com.trunfoAPI.security.model.UserSecurity;
 import br.com.trunfoAPI.security.util.CookieUtil;
@@ -13,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Controller;
@@ -30,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AuthenticationController {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Login login, HttpServletRequest req, HttpServletResponse res) {
@@ -49,15 +47,15 @@ public class AuthenticationController {
         if (authentication.isAuthenticated()) {
 
             UserSecurity userSecurity = (UserSecurity) authentication.getPrincipal();
-            Cookie cookie = CookieUtil.generatedCookie(user);
+            Cookie cookie = CookieUtil.generatedCookie(userSecurity);
             res.addCookie(cookie);
 
-            // ESSA FORMA É A ANTIGA
-            // Cria um novo contexto de segurança vazio
+//            ESSA FORMA É A ANTIGA
+//            Cria um novo contexto de segurança vazio
 //            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-            // Define a autenticação no contexto de segurança
+//            Define a autenticação no contexto de segurança
 //            securityContext.setAuthentication(authentication);
-            // Armazena o contexto de segurança atualizado no repositório da sessão
+//            Armazena o contexto de segurança atualizado no repositório da sessão
 //            securityContextRepository.saveContext(securityContext, req, res);
 
             // Retorna o principal de autenticação (geralmente o usuário autenticado)

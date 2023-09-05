@@ -20,7 +20,7 @@ public class UserSecurity implements UserDetails {
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL)
-    private User user; // Referência para um objeto User, possivelmente associado a este usuário
+    private User user; // Referência para um objeto User, associado a este usuário
 
     private Collection<GrantedAuthority> authorities; // As autorizações (papéis) deste usuário
 

@@ -13,7 +13,7 @@ public class JpaService implements UserDetailsService {
     @Autowired
     private UserRepositorySecurity userRepositorySecurity;
 
-
+    // Serve para buscar o usuário pelo ser username
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepositorySecurity.findByUser_Username(username);
