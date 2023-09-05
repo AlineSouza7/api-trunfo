@@ -14,6 +14,6 @@ public class JWTUtil {
         JWTUtil.userRepositorySecurity = userRepositorySecurity;
     }
 
-    
+
 
 }
