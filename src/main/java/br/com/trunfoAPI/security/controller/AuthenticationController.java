@@ -1,6 +1,10 @@
 package br.com.trunfoAPI.security.controller;
 
+import br.com.trunfoAPI.model.entity.User;
 import br.com.trunfoAPI.security.model.Login;
+import br.com.trunfoAPI.security.model.UserSecurity;
+import br.com.trunfoAPI.security.util.CookieUtil;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -43,14 +47,18 @@ public class AuthenticationController {
         Authentication authentication = authenticationManager.authenticate(token);
 
         if (authentication.isAuthenticated()) {
+
+            UserSecurity userSecurity = (UserSecurity) authentication.getPrincipal();
+            Cookie cookie = CookieUtil.generatedCookie(user);
+            res.addCookie(cookie);
+
+            // ESSA FORMA É A ANTIGA
             // Cria um novo contexto de segurança vazio
-            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-
+//            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
             // Define a autenticação no contexto de segurança
-            securityContext.setAuthentication(authentication);
-
+//            securityContext.setAuthentication(authentication);
             // Armazena o contexto de segurança atualizado no repositório da sessão
-            securityContextRepository.saveContext(securityContext, req, res);
+//            securityContextRepository.saveContext(securityContext, req, res);
 
             // Retorna o principal de autenticação (geralmente o usuário autenticado)
             return ResponseEntity.ok(authentication.getPrincipal());
